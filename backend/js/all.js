@@ -1,18 +1,19 @@
+const urlPath = "anna";
+const config = {
+  headers: {
+    Authorization: "i4aFigHaRLOmLyl8s0X8mfBhwaF3",
+  },
+};
+
 getOrders(); //訂單清單
 getProducts(); //產品品項圖表
 
 //1.axios載入來源資料
 function getOrders() {
-  let urlPath = "anna"; // 記得替換成自己申請的路徑
-
   axios
     .get(
       `https://livejs-api.hexschool.io/api/livejs/v1/admin/${urlPath}/orders`,
-      {
-        headers: {
-          Authorization: `i4aFigHaRLOmLyl8s0X8mfBhwaF3`,
-        },
-      }
+      config
     )
     .then(function (response) {
       console.log(response.data.orders);
@@ -20,8 +21,6 @@ function getOrders() {
     });
 }
 function getProducts() {
-  let urlPath = "anna"; // 記得替換成自己申請的路徑
-
   axios
     .get(
       `https://livejs-api.hexschool.io/api/livejs/v1/customer/${urlPath}/products`
@@ -32,16 +31,10 @@ function getProducts() {
     });
 }
 function deleteAll() {
-  let urlPath = "anna"; // 記得替換成自己申請的路徑
-
   axios
     .delete(
       `https://livejs-api.hexschool.io/api/livejs/v1/admin/${urlPath}/orders`,
-      {
-        headers: {
-          Authorization: `i4aFigHaRLOmLyl8s0X8mfBhwaF3`,
-        },
-      }
+      config
     )
     .then(function (response) {
       //console.log(response);
@@ -58,16 +51,10 @@ function deleteOne(id) {
   }
 
   function __go(id) {
-    let urlPath = "anna"; // 記得替換成自己申請的路徑
-
     axios
       .delete(
         `https://livejs-api.hexschool.io/api/livejs/v1/admin/${urlPath}/orders/${id}`,
-        {
-          headers: {
-            Authorization: `i4aFigHaRLOmLyl8s0X8mfBhwaF3`,
-          },
-        }
+        config
       )
       .then(function (response) {
         console.log(response);
@@ -93,7 +80,6 @@ function updateOderStatus(id, status) {
 
   function __go(id, status) {
     let value = status === "false" ? false : true;
-    let urlPath = "anna"; // 記得替換成自己申請的路徑
 
     axios
       .put(
@@ -104,11 +90,7 @@ function updateOderStatus(id, status) {
             paid: !value,
           },
         },
-        {
-          headers: {
-            Authorization: `i4aFigHaRLOmLyl8s0X8mfBhwaF3`,
-          },
-        }
+        config
       )
       .then(function (response) {
         if (!response.data.status) {

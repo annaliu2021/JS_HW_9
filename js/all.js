@@ -1,9 +1,10 @@
+const urlPath = "anna";
+
 getProducts(); //產品清單
 getCarts(); //購物車清單
 
 function getProducts() {
   const selectValue = document.querySelector(".productSelect").value;
-  let urlPath = "anna"; // 記得替換成自己申請的路徑
 
   axios
     .get(
@@ -25,10 +26,7 @@ function getProducts() {
       alert("取得產品清單發生錯誤");
     });
 }
-
 function getCarts() {
-  let urlPath = "anna"; // 記得替換成自己申請的路徑
-
   axios
     .get(
       `https://livejs-api.hexschool.io/api/livejs/v1/customer/${urlPath}/carts`
@@ -117,7 +115,7 @@ function renderCarTable(data) {
   </tr>`;
   document.querySelector(".shoppingCart-table").innerHTML = html;
 
-  //監聽事件
+  //監聽事件-刪除購物車一筆資料
   var btnDeleteOne = document.getElementsByClassName("btnDeleteOne");
   for (var i = 0; i < btnDeleteOne.length; i++) {
     btnDeleteOne[i].addEventListener(
@@ -129,12 +127,12 @@ function renderCarTable(data) {
     );
   } //--for end
 
+  //監聽事件-刪除購物車所有資料
   document
     .querySelector(".discardAllBtn")
     .addEventListener("click", function (e) {
       var yes = confirm("確定要刪除所有品項？");
       if (yes) {
-        let urlPath = "anna"; // 記得替換成自己申請的路徑
         axios
           .delete(
             `https://livejs-api.hexschool.io/api/livejs/v1/customer/${urlPath}/carts`
@@ -172,11 +170,10 @@ function renderOne(data) {
   return html;
 }
 
-//監聽事件+axios
+//監聽事件-刪除購物車一筆資料
 function deleteCartItem(id) {
   var yes = confirm("確定要刪除此品項？");
   if (yes) {
-    let urlPath = "anna"; // 記得替換成自己申請的路徑
     axios
       .delete(
         `https://livejs-api.hexschool.io/api/livejs/v1/customer/${urlPath}/carts/${id}`
@@ -190,9 +187,8 @@ function deleteCartItem(id) {
       });
   }
 }
+//監聽事件-加入購物車
 function AddToCar(id) {
-  //加入購物車
-  let urlPath = "anna"; // 記得替換成自己申請的路徑
   axios
     .post(
       `https://livejs-api.hexschool.io/api/livejs/v1/customer/${urlPath}/carts`,
@@ -218,11 +214,7 @@ function AddToCar(id) {
 }
 
 //監聽事件-篩選品項
-document
-  .querySelector(".productSelect")
-  .addEventListener("click", function (e) {
-    getProducts();
-  }); //--end
+document.querySelector(".productSelect").addEventListener("click", getProducts); //--end
 
 //新台幣金額格式
 function _moneyFormat(str) {
@@ -241,3 +233,51 @@ function moneyNTFormat(value) {
   }
   return `NT$${_moneyFormat(value)}`;
 }
+
+//監聽事件-送出表單
+document
+  .querySelector(".orderInfo-form")
+  .addEventListener("submit", function (e) {
+    //const form = document.querySelector(".orderInfo-form");
+    const formData = new FormData(e.target);
+    let message = "";
+    //檢查輸入資料
+    for (const pair of formData.entries()) {
+      //console.log(`${pair[0]}, ${pair[1]}`);
+      const key = pair[0];
+      const value = pair[1];
+      if (value.length == 0) {
+        message += `請輸入${key}\n`;
+      }
+    }
+    if (message.length > 0) {
+      alert(message);
+      return;
+    }
+
+    axios
+      .post(
+        `https://livejs-api.hexschool.io/api/livejs/v1/customer/${urlPath}/orders`,
+        {
+          data: {
+            user: {
+              name: formData.get("姓名"),
+              tel: formData.get("電話"),
+              email: formData.get("Email"),
+              address: formData.get("寄送地址"),
+              payment: formData.get("交易方式"),
+            },
+          },
+        }
+      )
+      .then(function (response) {
+        //console.log(response.data);
+        if (response.data.status) {
+          alert("訂購成功");
+        }
+      })
+      .catch(function (error) {
+        // handle error
+        alert("送出訂單發生錯誤");
+      });
+  });
